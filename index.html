@@ -117,7 +117,7 @@
                     </div>
                     <div class="bg-slate-50 p-4 rounded-lg border border-slate-100">
                         <div class="text-orange-500 font-bold text-lg mb-1">Öncelikli Kanallar</div>
-                        <div class="text-slate-700">Instagram Reels, TikTok, YouTube Shorts.</div>
+                        <div class="text-slate-700">Instagram Reels, YouTube Shorts.</div>
                     </div>
                     <div class="bg-slate-50 p-4 rounded-lg border border-slate-100">
                         <div class="text-orange-500 font-bold text-lg mb-1">En Büyük Engel</div>
@@ -201,11 +201,10 @@
         <!-- --- TAB: İÇERİK --- -->
         <div id="icerik" class="tab-content">
             <div class="mb-6 bg-slate-800 text-white p-4 rounded-xl flex items-center justify-between">
-                <div><h3 class="font-bold">Format Karması</h3><p class="text-sm text-slate-300">50% Reels/TikTok | 20% Carousel | 20% Story | 10% Canlı/UGC</p></div>
+                <div><h3 class="font-bold">Format Karması</h3><p class="text-sm text-slate-300">60% Reels | 20% Carousel | 20% Story | 10% Canlı/UGC</p></div>
                 <i data-lucide="video" class="text-orange-500 opacity-80 w-8 h-8"></i>
             </div>
             <div id="video-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <!-- Video cards will be injected here or hardcoded for performance -->
                 <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm relative overflow-hidden group">
                     <span class="text-xs font-bold px-2 py-1 bg-slate-100 text-slate-600 rounded-md mb-2 inline-block">Fiyat Danışmanlığı</span>
                     <h4 class="text-lg font-bold text-slate-800 mt-1">2 Milyona Ne Alınır?</h4>
@@ -222,7 +221,6 @@
                         <span class="text-xs text-slate-400">Pillar: Mega Stok</span>
                     </div>
                 </div>
-                <!-- ... More video cards -->
             </div>
         </div>
 
@@ -256,7 +254,7 @@
                 <ul class="text-sm text-slate-500 space-y-1 border-t pt-3 border-slate-100">
                     <li><strong>Bütçe:</strong> %20</li>
                     <li><strong>İçerik:</strong> Drone Tesis Turu</li>
-                    <li><strong>KPI:</strong> CPM (Gösterim Maliyeti)</li>
+                    <li><strong>KPI:</strong> CPM (Bin Gösterim Maliyeti)</li>
                 </ul>
             </div>
             <div class="bg-white p-6 rounded-xl border-t-4 border-orange-500 shadow-sm transform scale-105 z-10 relative">
@@ -303,18 +301,18 @@
     // Initialize Lucide Icons
     lucide.createIcons();
 
-    // Data for dynamic rendering
+    // Data for dynamic rendering (TikTok removed)
     const calendarData = [
-        { day: "1. Gün (Pzt)", format: "Reels / TikTok", content: "2 Milyona Ne Alınır?", time: "18:30" },
-        { day: "2. Gün (Sal)", format: "IG Story (3x)", content: "Sahadan Anlık Stok + Anket", time: "Gün İçi" },
-        { day: "3. Gün (Çar)", format: "Reels / Shorts", content: "Ekspertizde Gözden Kaçanlar", time: "18:30" },
+        { day: "1. Gün (Pzt)", format: "Instagram Reels", content: "2 Milyona Ne Alınır?", time: "18:30" },
+        { day: "2. Gün (Sal)", format: "Instagram Story (3x)", content: "Sahadan Anlık Stok + Anket", time: "Gün İçi" },
+        { day: "3. Gün (Çar)", format: "Instagram Reels / Shorts", content: "Ekspertizde Gözden Kaçanlar", time: "18:30" },
         { day: "4. Gün (Per)", format: "Carousel", content: "Hangi Dorse Neye Uygun? (Rehber)", time: "14:00" },
-        { day: "5. Gün (Cum)", format: "Reels / TikTok", content: "Ahmet Usta Korna Ritüeli", time: "19:00" },
-        { day: "6. Gün (Cmt)", format: "Reels", content: "Drone ile Tır Pazarına Giriş", time: "14:00" },
-        { day: "7. Gün (Paz)", format: "IG Story", content: "Haftanın Özeti / Pazar Sohbeti", time: "12:00" },
-        { day: "8. Gün (Pzt)", format: "Reels / TikTok", content: "Araç Temizleme (Before/After)", time: "18:30" },
-        { day: "9. Gün (Sal)", format: "YT Shorts / IG", content: "360 Derece Kabin İçi Sanal Tur", time: "18:30" },
-        { day: "10. Gün (Çar)", format: "Reels / Shorts", content: "ASMR Kabin İçi (V8 Motor Sesi)", time: "19:00" }
+        { day: "5. Gün (Cum)", format: "Instagram Reels / Shorts", content: "Ahmet Usta Korna Ritüeli", time: "19:00" },
+        { day: "6. Gün (Cmt)", format: "Instagram Reels", content: "Drone ile Tır Pazarına Giriş", time: "14:00" },
+        { day: "7. Gün (Paz)", format: "Instagram Story", content: "Haftanın Özeti / Pazar Sohbeti", time: "12:00" },
+        { day: "8. Gün (Pzt)", format: "Instagram Reels / Shorts", content: "Araç Temizleme (Before/After)", time: "18:30" },
+        { day: "9. Gün (Sal)", format: "YouTube Shorts / IG", content: "360 Derece Kabin İçi Sanal Tur", time: "18:30" },
+        { day: "10. Gün (Çar)", format: "Instagram Reels / Shorts", content: "ASMR Kabin İçi (V8 Motor Sesi)", time: "19:00" }
     ];
 
     const checklistData = [
@@ -340,19 +338,11 @@
 
     // Tab switcher function
     function showTab(tabId, element) {
-        // Hide all tabs
         document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-        // Show selected tab
         document.getElementById(tabId).classList.add('active');
-        
-        // Update sidebar items
         document.querySelectorAll('.sidebar-item').forEach(item => item.classList.remove('active'));
         element.classList.add('active');
-
-        // Update title
         document.getElementById('page-title').innerText = titles[tabId];
-        
-        // On mobile, scroll to top when tab changes
         if (window.innerWidth < 768) {
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
