@@ -1,383 +1,403 @@
-import React, { useState } from 'react';
-import { 
-  Truck, Users, ShieldCheck, Target, Video, 
-  CalendarDays, BarChart4, CheckSquare, ChevronRight, 
-  PlayCircle, AlertCircle, Phone
-} from 'lucide-react';
-
-// --- DATA ---
-const personas = [
-  {
-    id: 1,
-    title: "Bireysel Esnaf / Şoför",
-    motivation: "Kendi çekicisini alıp patron olmak",
-    objection: "Kredim çıkar mı? Araç yolda bırakır mı?",
-    trigger: "Finansman kolaylığı, dayanıklılık",
-    cta: "Peşinatını ayarla, gerisini bize bırak!"
-  },
-  {
-    id: 2,
-    title: "Büyüyen KOBİ Lojistikçisi",
-    motivation: "İşe yetişmek için hızlıca filo genişletmek",
-    objection: "Araçlar yorgun mu? Faturası tam mı?",
-    trigger: "Toplu alım avantajı, kurumsal güven",
-    cta: "Filo özel fiyatları için satış danışmanımızla görüşün."
-  },
-  {
-    id: 3,
-    title: "Yatırımcı / Hafriyatçı",
-    motivation: "Projeyi yetiştirmek için acil sağlam damper",
-    objection: "Tonaja dayanır mı? Şasi işlemli mi?",
-    trigger: "Ağır şartlara dayanıklı araçlar",
-    cta: "Ağır şarta hazır araçlar sahaya inmek için bekliyor."
-  }
-];
-
-const pillars = [
-  { icon: <ShieldCheck size={24}/>, title: "Şeffaf Ekspertiz", desc: "Motordaki ufak kusuru bile söylemek güveni artırır. Nitelikli lead sağlar." },
-  { icon: <BarChart4 size={24}/>, title: "Finansal Rehberlik", desc: "Kredi/takas sürecini basitleştirir, satın alma motivasyonunu tetikler." },
-  { icon: <Truck size={24}/>, title: "Mega Stok & Tesis", desc: "Drone çekimleriyle 'merdiven altı değil, dev pazar' algısı yaratır." },
-  { icon: <Users size={24}/>, title: "Esnaf Samimiyeti", desc: "Danışmanların doğal dili markayı insanlaştırır, aidiyet kurar." },
-  { icon: <PlayCircle size={24}/>, title: "Korna Ritüeli (Kanıt)", desc: "Teslimatta kornaya basan müşteri videoları diğer alıcıları teşvik eder." }
-];
-
-const videoIdeas = [
-  { title: "2 Milyona Ne Alınır?", format: "Fiyat Danışmanlığı", hook: "Cebinizde 2 Milyon var ve çekici arıyorsunuz...", pillar: "Finansal Rehberlik" },
-  { title: "ASMR Kabin İçi", format: "ASMR / Lüks", hook: "(Sadece V8 Motor Sesi)", pillar: "Mega Stok" },
-  { title: "Ekspertizde Gözden Kaçanlar", format: "Myth-Busting", hook: "Dorse alırken brandaya değil, buraya bakacaksın!", pillar: "Şeffaf Ekspertiz" },
-  { title: "Kredi Çıkmaz Deme", format: "POV / Çözüm", hook: "Bankalar kredi vermiyor mu? Bize gelmedin.", pillar: "Finansal Rehberlik" },
-  { title: "Fiyatı Tahmin Et", format: "Gamification", hook: "Bu 2020 Volvo'nun fiyatını bilen ilk kişiye...", pillar: "Esnaf Samimiyeti" },
-  { title: "Ahmet Usta Teslimat", format: "Duygu / Kanıt", hook: "Ahmet Usta'nın hayali bugün gerçek oldu!", pillar: "Sosyal Kanıt" },
-  { title: "Araç Temizleme", format: "Before/After", hook: "Şantiyeden çıkan bu aracın son haline inanamayacaksınız.", pillar: "Şeffaf Ekspertiz" },
-  { title: "360° Kabin Turu", format: "İnteraktif", hook: "Telefonu çevirerek kabini kendin gez!", pillar: "Mega Stok" }
-];
-
-const calendarData = [
-  { day: "1. Gün (Pzt)", format: "Reels / TikTok", content: "2 Milyona Ne Alınır?", time: "18:30" },
-  { day: "2. Gün (Sal)", format: "IG Story (3x)", content: "Sahadan Anlık Stok + Anket", time: "Gün İçi" },
-  { day: "3. Gün (Çar)", format: "Reels / Shorts", content: "Ekspertizde Gözden Kaçanlar", time: "18:30" },
-  { day: "4. Gün (Per)", format: "Carousel", content: "Hangi Dorse Neye Uygun? (Rehber)", time: "14:00" },
-  { day: "5. Gün (Cum)", format: "Reels / TikTok", content: "Ahmet Usta Korna Ritüeli", time: "19:00" },
-  { day: "6. Gün (Cmt)", format: "Reels", content: "Drone ile Tır Pazarına Giriş", time: "14:00" },
-  { day: "7. Gün (Paz)", format: "IG Story", content: "Haftanın Özeti / Pazar Sohbeti", time: "12:00" },
-  { day: "8. Gün (Pzt)", format: "Reels / TikTok", content: "Araç Temizleme (Before/After)", time: "18:30" },
-  { day: "9. Gün (Sal)", format: "YT Shorts / IG", content: "360 Derece Kabin İçi Sanal Tur", time: "18:30" },
-  { day: "10. Gün (Çar)", format: "Reels / Shorts", content: "ASMR Kabin İçi (V8 Motor Sesi)", time: "19:00" }
-];
-
-export default function App() {
-  const [activeTab, setActiveTab] = useState('ozet');
-  const [checklist, setChecklist] = useState([
-    { id: 1, text: "Bio kısmını 'Türkiye'nin En Büyük Ticari Araç Pazarı' olarak güncelle.", done: false },
-    { id: 2, text: "Haftalık çekim gününü belirle (Örn: Salı, Tuzla Şubesi).", done: false },
-    { id: 3, text: "İlk 5 video fikri için araçları yıkat ve hazırlat.", done: false },
-    { id: 4, text: "Satış danışmanına strateji raporunu briefle.", done: false },
-    { id: 5, text: "İlk 5 videoyu çek, stokla ve kurgularını tamamla.", done: false },
-    { id: 6, text: "WhatsApp Business 'Karşılama Mesajı'nı yenile.", done: false },
-    { id: 7, text: "Meta üzerinden ilk Lead (Potansiyel Müşteri) reklamını yayına al.", done: false },
-  ]);
-
-  const toggleChecklist = (id) => {
-    setChecklist(checklist.map(item => item.id === id ? { ...item, done: !item.done } : item));
-  };
-
-  const NavItem = ({ id, icon, label }) => (
-    <button
-      onClick={() => setActiveTab(id)}
-      className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-all ${
-        activeTab === id 
-          ? 'bg-orange-500 text-white shadow-md' 
-          : 'text-slate-300 hover:bg-slate-800 hover:text-white'
-      }`}
-    >
-      {icon}
-      <span className="font-medium">{label}</span>
-    </button>
-  );
-
-  return (
-    <div className="min-h-screen bg-slate-50 flex flex-col md:flex-row font-sans">
-      {/* Sidebar */}
-      <aside className="w-full md:w-64 bg-slate-900 text-white flex flex-col shadow-xl z-10">
-        <div className="p-6 border-b border-slate-800">
-          <h1 className="text-5xl tracking-wide" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>
-            NEŞELİ<span className="text-orange-500">.</span>
-          </h1>
-          <p className="text-[11px] text-slate-400 mt-1 uppercase tracking-widest font-semibold">Dijital Strateji Raporu</p>
-        </div>
-        <nav className="flex-1 px-4 py-6 space-y-2">
-          <NavItem id="ozet" icon={<Target size={20} />} label="Marka Özeti" />
-          <NavItem id="kitle" icon={<Users size={20} />} label="Hedef Kitle" />
-          <NavItem id="strateji" icon={<ShieldCheck size={20} />} label="Otorite & Strateji" />
-          <NavItem id="icerik" icon={<Video size={20} />} label="Viral Video Fikirleri" />
-          <NavItem id="takvim" icon={<CalendarDays size={20} />} label="İçerik Takvimi" />
-          <NavItem id="reklam" icon={<BarChart4 size={20} />} label="Reklam & KPI" />
-          <NavItem id="aksiyon" icon={<CheckSquare size={20} />} label="7 Günlük Aksiyon" />
-        </nav>
-        
-        {/* Footer in Sidebar - Updated for Corporate Look */}
-        <div className="p-5 mt-auto border-t border-slate-800 text-center">
-          <div className="mb-2">
-            <span className="text-[10px] text-slate-500 uppercase tracking-[0.2em] block mb-1">Stratejik Partner</span>
-            <span className="text-xs text-slate-200 font-bold tracking-wider">MUIMEDYA</span>
-          </div>
-          <p className="text-[9px] text-slate-500 leading-relaxed italic">
-            Bu rapor Neşeli için özel olarak hazırlanmıştır.<br/>
-            © 2026 Dijital Performans Ajansı. Tüm Hakları Saklıdır.
-          </p>
-        </div>
-      </aside>
-
-      {/* Main Content */}
-      <main className="flex-1 p-6 md:p-10 overflow-y-auto">
-        <header className="mb-8 border-b border-slate-200 pb-4">
-          <h2 className="text-3xl font-bold text-slate-800 capitalize">
-            {activeTab === 'ozet' && 'Marka Özeti ve Hedefler'}
-            {activeTab === 'kitle' && 'Hedef Kitle Personaları'}
-            {activeTab === 'strateji' && 'Otorite İnşası ve Konumlandırma'}
-            {activeTab === 'icerik' && 'Viral Kısa Video Kütüphanesi'}
-            {activeTab === 'takvim' && 'Örnek İçerik Takvimi (İlk 10 Gün)'}
-            {activeTab === 'reklam' && 'Reklam, Dağıtım ve Ölçümleme'}
-            {activeTab === 'aksiyon' && 'İlk 7 Günlük Uygulama Planı'}
-          </h2>
-          <p className="text-slate-500 mt-2">Sektörde güvenin, dijitalde otoritenin yeni yüzü.</p>
-        </header>
-
-        {/* --- TAB: ÖZET --- */}
-        {activeTab === 'ozet' && (
-          <div className="space-y-6 animate-fade-in">
-            <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
-              <h3 className="text-xl font-bold text-slate-800 mb-4 flex items-center">
-                <AlertCircle className="text-orange-500 mr-2" /> Mevcut Durum & Odak
-              </h3>
-              <p className="text-slate-600 leading-relaxed mb-4">
-                Neşeli Kamyon Tır Pazarı (Tuzla & Ankara) fiziki olarak çok güçlü bir altyapıya sahip olmasına rağmen, dijital varlığı daha çok statik ilanlara dayanmaktadır. Yeni stratejinin temel amacı: <strong>Statik ilan panosundan, dinamik, video odaklı ve güven veren bir medya organına dönüşmektir.</strong>
-              </p>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
-                <div className="bg-slate-50 p-4 rounded-lg border border-slate-100">
-                  <div className="text-orange-500 font-bold text-lg mb-1">Ana Hedef</div>
-                  <div className="text-slate-700">WhatsApp ve form üzerinden nitelikli Lead (Talep) toplamak.</div>
-                </div>
-                <div className="bg-slate-50 p-4 rounded-lg border border-slate-100">
-                  <div className="text-orange-500 font-bold text-lg mb-1">Öncelikli Kanallar</div>
-                  <div className="text-slate-700">Instagram Reels, TikTok, YouTube Shorts.</div>
-                </div>
-                <div className="bg-slate-50 p-4 rounded-lg border border-slate-100">
-                  <div className="text-orange-500 font-bold text-lg mb-1">En Büyük Engeli Aşma</div>
-                  <div className="text-slate-700">"Hasar kaydı ve fiyat belirsizliği" itirazlarını şeffaflıkla yıkmak.</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* --- TAB: HEDEF KİTLE --- */}
-        {activeTab === 'kitle' && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-fade-in">
-            {personas.map(persona => (
-              <div key={persona.id} className="bg-white p-6 rounded-xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow">
-                <div className="w-12 h-12 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center mb-4">
-                  <Users size={24} />
-                </div>
-                <h3 className="text-xl font-bold text-slate-800 mb-3">{persona.title}</h3>
-                <div className="space-y-3 text-sm">
-                  <p><strong>Motivasyon:</strong> <span className="text-slate-600">{persona.motivation}</span></p>
-                  <p><strong>İtiraz/Korku:</strong> <span className="text-slate-600">{persona.objection}</span></p>
-                  <p><strong>İçerik Tetikleyicisi:</strong> <span className="text-slate-600">{persona.trigger}</span></p>
-                  <div className="pt-3 mt-3 border-t border-slate-100">
-                    <span className="text-xs font-bold text-slate-400 uppercase">Önerilen CTA</span>
-                    <p className="text-orange-600 font-medium mt-1">"{persona.cta}"</p>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* --- TAB: STRATEJİ --- */}
-        {activeTab === 'strateji' && (
-          <div className="space-y-6 animate-fade-in">
-            <h3 className="text-xl font-bold text-slate-800">5 Temel Otorite Direği</h3>
-            <p className="text-slate-500 mb-6">Her bir içerik bu 5 doğrudan birine hizmet etmeli ve nedensel olarak satışa bağlanmalıdır.</p>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {pillars.map((pillar, idx) => (
-                <div key={idx} className="bg-white p-5 rounded-xl shadow-sm border border-slate-100 flex items-start space-x-4">
-                  <div className="text-orange-500 bg-orange-50 p-2 rounded-lg">
-                    {pillar.icon}
-                  </div>
-                  <div>
-                    <h4 className="font-bold text-slate-800">{pillar.title}</h4>
-                    <p className="text-sm text-slate-600 mt-1">{pillar.desc}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* --- TAB: İÇERİK --- */}
-        {activeTab === 'icerik' && (
-          <div className="animate-fade-in">
-             <div className="mb-6 bg-slate-800 text-white p-4 rounded-xl flex items-center justify-between">
-                <div>
-                  <h3 className="font-bold">Format Karması</h3>
-                  <p className="text-sm text-slate-300">50% Reels/TikTok | 20% Carousel | 20% Story | 10% Canlı/UGC</p>
-                </div>
-                <Video size={32} className="text-orange-500 opacity-80" />
-             </div>
-             
-             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {videoIdeas.map((video, idx) => (
-                <div key={idx} className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm relative overflow-hidden group">
-                  <div className="absolute top-0 left-0 w-1 h-full bg-orange-500 transform scale-y-0 group-hover:scale-y-100 transition-transform origin-bottom"></div>
-                  <span className="text-xs font-bold px-2 py-1 bg-slate-100 text-slate-600 rounded-md mb-2 inline-block">
-                    {video.format}
-                  </span>
-                  <h4 className="text-lg font-bold text-slate-800 mt-1">{video.title}</h4>
-                  <p className="text-slate-600 text-sm mt-2">
-                    <strong className="text-slate-700">Hook:</strong> "{video.hook}"
-                  </p>
-                  <div className="mt-4 flex items-center justify-between border-t border-slate-100 pt-3">
-                    <span className="text-xs text-slate-400">Pillar: {video.pillar}</span>
-                    <button className="text-orange-500 hover:text-orange-600 text-sm font-medium flex items-center">
-                      Detaylar <ChevronRight size={16} />
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* --- TAB: TAKVİM --- */}
-        {activeTab === 'takvim' && (
-          <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden animate-fade-in">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse">
-                <thead>
-                  <tr className="bg-slate-50 text-slate-600 border-b border-slate-200 text-sm uppercase tracking-wider">
-                    <th className="p-4 font-semibold">Gün / Tarih</th>
-                    <th className="p-4 font-semibold">Format / Kanal</th>
-                    <th className="p-4 font-semibold">İçerik Konusu</th>
-                    <th className="p-4 font-semibold">Saat</th>
-                  </tr>
-                </thead>
-                <tbody className="text-slate-700">
-                  {calendarData.map((row, idx) => (
-                    <tr key={idx} className="border-b border-slate-100 hover:bg-slate-50">
-                      <td className="p-4 whitespace-nowrap font-medium">{row.day}</td>
-                      <td className="p-4">
-                        <span className="bg-slate-100 text-slate-700 px-2 py-1 rounded text-xs">
-                          {row.format}
-                        </span>
-                      </td>
-                      <td className="p-4">{row.content}</td>
-                      <td className="p-4 text-sm">{row.time}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
-
-        {/* --- TAB: REKLAM --- */}
-        {activeTab === 'reklam' && (
-          <div className="grid md:grid-cols-3 gap-6 animate-fade-in">
-             <div className="bg-white p-6 rounded-xl border-t-4 border-blue-400 shadow-sm">
-                <div className="h-10 w-10 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center mb-4">
-                  <Target size={20} />
-                </div>
-                <h3 className="font-bold text-lg mb-2">1. Keşif (Top Funnel)</h3>
-                <p className="text-slate-600 text-sm mb-4">Yeni kitlelere tesisi ve büyük stoğu gösterme. Marka bilinirliği artışı.</p>
-                <ul className="text-sm text-slate-500 space-y-1 border-t pt-3 border-slate-100">
-                  <li><strong>Bütçe Dağılımı:</strong> %20</li>
-                  <li><strong>İçerik:</strong> Drone Tesis Turu</li>
-                  <li><strong>Ana KPI:</strong> CPM (Gösterim Maliyeti)</li>
-                </ul>
-             </div>
-             <div className="bg-white p-6 rounded-xl border-t-4 border-orange-500 shadow-sm transform scale-105 z-10 relative">
-                <div className="absolute top-0 right-0 bg-orange-500 text-white text-xs font-bold px-3 py-1 rounded-bl-lg rounded-tr-xl">
-                  ANA ODAK
-                </div>
-                <div className="h-10 w-10 bg-orange-100 text-orange-600 rounded-lg flex items-center justify-center mb-4">
-                  <Phone size={20} />
-                </div>
-                <h3 className="font-bold text-lg mb-2">2. Trafik & Lead</h3>
-                <p className="text-slate-600 text-sm mb-4">Doğrudan satış ve WhatsApp iletişimine yönlendiren kampanyalar.</p>
-                <ul className="text-sm text-slate-500 space-y-1 border-t pt-3 border-slate-100">
-                  <li><strong>Bütçe Dağılımı:</strong> %60</li>
-                  <li><strong>İçerik:</strong> Fırsat Araçları, Finans</li>
-                  <li><strong>Ana KPI:</strong> CPL / WhatsApp Tıklaması</li>
-                </ul>
-             </div>
-             <div className="bg-white p-6 rounded-xl border-t-4 border-green-500 shadow-sm">
-                <div className="h-10 w-10 bg-green-100 text-green-600 rounded-lg flex items-center justify-center mb-4">
-                  <ShieldCheck size={20} />
-                </div>
-                <h3 className="font-bold text-lg mb-2">3. Remarketing</h3>
-                <p className="text-slate-600 text-sm mb-4">Daha önce etkileşime girenleri ikna etme ve güven aşılama.</p>
-                <ul className="text-sm text-slate-500 space-y-1 border-t pt-3 border-slate-100">
-                  <li><strong>Bütçe Dağılımı:</strong> %20</li>
-                  <li><strong>İçerik:</strong> Müşteri Teslimat Videoları</li>
-                  <li><strong>Ana KPI:</strong> Satışa Dönüşüm Oranı</li>
-                </ul>
-             </div>
-          </div>
-        )}
-
-        {/* --- TAB: AKSİYON --- */}
-        {activeTab === 'aksiyon' && (
-          <div className="bg-white p-6 md:p-8 rounded-xl shadow-sm border border-slate-200 animate-fade-in max-w-3xl">
-            <h3 className="text-xl font-bold text-slate-800 mb-6 flex items-center">
-              İlk 7 Günde Yapılacaklar Listesi
-            </h3>
-            <div className="space-y-3">
-              {checklist.map(item => (
-                <div 
-                  key={item.id} 
-                  className={`flex items-start p-3 rounded-lg border transition-colors cursor-pointer ${
-                    item.done ? 'bg-green-50 border-green-200' : 'bg-slate-50 border-slate-200 hover:bg-slate-100'
-                  }`}
-                  onClick={() => toggleChecklist(item.id)}
-                >
-                  <div className={`mt-0.5 w-6 h-6 flex-shrink-0 rounded border flex items-center justify-center mr-3 transition-colors ${
-                    item.done ? 'bg-green-500 border-green-500' : 'bg-white border-slate-300'
-                  }`}>
-                    {item.done && <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>}
-                  </div>
-                  <span className={`text-slate-700 select-none ${item.done ? 'line-through opacity-60' : ''}`}>
-                    {item.text}
-                  </span>
-                </div>
-              ))}
-            </div>
-            
-            <div className="mt-8 pt-6 border-t border-slate-100">
-               <a 
-                 href="https://wa.me/905322426012?text=Merhaba,%20strateji%20raporunu%20inceledim%20ve%20onayl%C4%B1yorum.%20Ba%C5%9Flayabiliriz!" 
-                 target="_blank"
-                 rel="noopener noreferrer"
-                 className="w-full bg-slate-900 hover:bg-slate-800 text-white font-medium py-3 px-4 rounded-lg transition-colors flex items-center justify-center cursor-pointer"
-               >
-                 Stratejiyi Onayla ve Başla
-               </a>
-            </div>
-          </div>
-        )}
-
-      </main>
-      <style dangerouslySetInnerHTML={{__html: `
-        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
-
-        .animate-fade-in {
-          animation: fadeIn 0.4s ease-out forwards;
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neşeli - Dijital Strateji Raporu</title>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@400;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body {
+            font-family: 'Open Sans', sans-serif;
+        }
+        h1, h2, h3, h4 {
+            font-family: 'Montserrat', sans-serif;
+        }
+        .logo-font {
+            font-family: 'Bebas Neue', sans-serif;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.4s ease-out forwards;
         }
         @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(10px); }
-          to { opacity: 1; transform: translateY(0); }
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-      `}} />
-    </div>
-  );
-}
+        .sidebar-item.active {
+            background-color: #f97316; /* Orange-500 */
+            color: white;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        }
+    </style>
+</head>
+<body class="bg-slate-50">
+
+<div class="min-h-screen flex flex-col md:flex-row">
+    <!-- Sidebar -->
+    <aside class="w-full md:w-64 bg-slate-900 text-white flex flex-col shadow-xl z-10 sticky top-0 md:h-screen">
+        <div class="p-6 border-b border-slate-800">
+            <h1 class="text-5xl tracking-wide logo-font">
+                NEŞELİ<span class="text-orange-500">.</span>
+            </h1>
+            <p class="text-[11px] text-slate-400 mt-1 uppercase tracking-widest font-semibold">Dijital Strateji Raporu</p>
+        </div>
+        
+        <nav class="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
+            <button onclick="showTab('ozet', this)" class="sidebar-item active w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-all text-slate-300 hover:bg-slate-800 hover:text-white">
+                <i data-lucide="target" class="w-5 h-5"></i>
+                <span class="font-medium">Marka Özeti</span>
+            </button>
+            <button onclick="showTab('kitle', this)" class="sidebar-item w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-all text-slate-300 hover:bg-slate-800 hover:text-white">
+                <i data-lucide="users" class="w-5 h-5"></i>
+                <span class="font-medium">Hedef Kitle</span>
+            </button>
+            <button onclick="showTab('strateji', this)" class="sidebar-item w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-all text-slate-300 hover:bg-slate-800 hover:text-white">
+                <i data-lucide="shield-check" class="w-5 h-5"></i>
+                <span class="font-medium">Otorite & Strateji</span>
+            </button>
+            <button onclick="showTab('icerik', this)" class="sidebar-item w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-all text-slate-300 hover:bg-slate-800 hover:text-white">
+                <i data-lucide="video" class="w-5 h-5"></i>
+                <span class="font-medium">Viral Video Fikirleri</span>
+            </button>
+            <button onclick="showTab('takvim', this)" class="sidebar-item w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-all text-slate-300 hover:bg-slate-800 hover:text-white">
+                <i data-lucide="calendar-days" class="w-5 h-5"></i>
+                <span class="font-medium">İçerik Takvimi</span>
+            </button>
+            <button onclick="showTab('reklam', this)" class="sidebar-item w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-all text-slate-300 hover:bg-slate-800 hover:text-white">
+                <i data-lucide="bar-chart-4" class="w-5 h-5"></i>
+                <span class="font-medium">Reklam & KPI</span>
+            </button>
+            <button onclick="showTab('aksiyon', this)" class="sidebar-item w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-all text-slate-300 hover:bg-slate-800 hover:text-white">
+                <i data-lucide="check-square" class="w-5 h-5"></i>
+                <span class="font-medium">7 Günlük Aksiyon</span>
+            </button>
+        </nav>
+        
+        <!-- Corporate Footer -->
+        <div class="p-5 mt-auto border-t border-slate-800 text-center">
+            <div class="mb-2">
+                <span class="text-[10px] text-slate-500 uppercase tracking-[0.2em] block mb-1">Stratejik Partner</span>
+                <span class="text-xs text-slate-200 font-bold tracking-wider">MUIMEDYA</span>
+            </div>
+            <p class="text-[9px] text-slate-500 leading-relaxed italic">
+                Bu rapor Neşeli için özel olarak hazırlanmıştır.<br/>
+                © 2026 Dijital Performans Ajansı. Tüm Hakları Saklıdır.
+            </p>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 p-6 md:p-10 overflow-y-auto">
+        <header class="mb-8 border-b border-slate-200 pb-4">
+            <h2 id="page-title" class="text-3xl font-bold text-slate-800 capitalize">Marka Özeti ve Hedefler</h2>
+            <p class="text-slate-500 mt-2">Sektörde güvenin, dijitalde otoritenin yeni yüzü.</p>
+        </header>
+
+        <!-- --- TAB: ÖZET --- -->
+        <div id="ozet" class="tab-content active space-y-6">
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+                <h3 class="text-xl font-bold text-slate-800 mb-4 flex items-center">
+                    <i data-lucide="alert-circle" class="text-orange-500 mr-2 w-6 h-6"></i> Mevcut Durum & Odak
+                </h3>
+                <p class="text-slate-600 leading-relaxed mb-4">
+                    Neşeli Kamyon Tır Pazarı (Tuzla & Ankara) fiziki olarak çok güçlü bir altyapıya sahip olmasına rağmen, dijital varlığı daha çok statik ilanlara dayanmaktadır. Yeni stratejinin temel amacı: <strong>Statik ilan panosundan, dinamik, video odaklı ve güven veren bir medya organına dönüşmektir.</strong>
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+                    <div class="bg-slate-50 p-4 rounded-lg border border-slate-100">
+                        <div class="text-orange-500 font-bold text-lg mb-1">Ana Hedef</div>
+                        <div class="text-slate-700">WhatsApp ve form üzerinden nitelikli Lead (Talep) toplamak.</div>
+                    </div>
+                    <div class="bg-slate-50 p-4 rounded-lg border border-slate-100">
+                        <div class="text-orange-500 font-bold text-lg mb-1">Öncelikli Kanallar</div>
+                        <div class="text-slate-700">Instagram Reels, TikTok, YouTube Shorts.</div>
+                    </div>
+                    <div class="bg-slate-50 p-4 rounded-lg border border-slate-100">
+                        <div class="text-orange-500 font-bold text-lg mb-1">En Büyük Engel</div>
+                        <div class="text-slate-700">"Hasar kaydı ve fiyat belirsizliği" itirazlarını şeffaflıkla yıkmak.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- --- TAB: KİTLE --- -->
+        <div id="kitle" class="tab-content grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow">
+                <div class="w-12 h-12 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center mb-4"><i data-lucide="users"></i></div>
+                <h3 class="text-xl font-bold text-slate-800 mb-3">Bireysel Esnaf / Şoför</h3>
+                <div class="space-y-3 text-sm">
+                    <p><strong>Motivasyon:</strong> <span class="text-slate-600">Kendi çekicisini alıp patron olmak</span></p>
+                    <p><strong>İtiraz/Korku:</strong> <span class="text-slate-600">Kredim çıkar mı? Araç yolda bırakır mı?</span></p>
+                    <p><strong>Tetikleyici:</strong> <span class="text-slate-600">Finansman kolaylığı, dayanıklılık</span></p>
+                    <div class="pt-3 mt-3 border-t border-slate-100">
+                        <span class="text-xs font-bold text-slate-400 uppercase">Önerilen CTA</span>
+                        <p class="text-orange-600 font-medium mt-1">"Peşinatını ayarla, gerisini bize bırak!"</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow">
+                <div class="w-12 h-12 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center mb-4"><i data-lucide="users"></i></div>
+                <h3 class="text-xl font-bold text-slate-800 mb-3">Büyüyen KOBİ Lojistikçisi</h3>
+                <div class="space-y-3 text-sm">
+                    <p><strong>Motivasyon:</strong> <span class="text-slate-600">İşe yetişmek için hızlıca filo genişletmek</span></p>
+                    <p><strong>İtiraz/Korku:</strong> <span class="text-slate-600">Araçlar yorgun mu? Faturası tam mı?</span></p>
+                    <p><strong>Tetikleyici:</strong> <span class="text-slate-600">Toplu alım avantajı, kurumsal güven</span></p>
+                    <div class="pt-3 mt-3 border-t border-slate-100">
+                        <span class="text-xs font-bold text-slate-400 uppercase">Önerilen CTA</span>
+                        <p class="text-orange-600 font-medium mt-1">"Filo özel fiyatları için danışmanımızla görüşün."</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow">
+                <div class="w-12 h-12 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center mb-4"><i data-lucide="users"></i></div>
+                <h3 class="text-xl font-bold text-slate-800 mb-3">Yatırımcı / Hafriyatçı</h3>
+                <div class="space-y-3 text-sm">
+                    <p><strong>Motivasyon:</strong> <span class="text-slate-600">Projeyi yetiştirmek için acil sağlam damper</span></p>
+                    <p><strong>İtiraz/Korku:</strong> <span class="text-slate-600">Tonaja dayanır mı? Şasi işlemli mi?</span></p>
+                    <p><strong>Tetikleyici:</strong> <span class="text-slate-600">Ağır şartlara dayanıklı araçlar</span></p>
+                    <div class="pt-3 mt-3 border-t border-slate-100">
+                        <span class="text-xs font-bold text-slate-400 uppercase">Önerilen CTA</span>
+                        <p class="text-orange-600 font-medium mt-1">"Ağır şarta hazır araçlar sahada bekliyor."</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- --- TAB: STRATEJİ --- -->
+        <div id="strateji" class="tab-content space-y-6">
+            <h3 class="text-xl font-bold text-slate-800">5 Temel Otorite Direği</h3>
+            <p class="text-slate-500 mb-6">Her bir içerik bu 5 doğrudan birine hizmet etmeli ve nedensel olarak satışa bağlanmalıdır.</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-100 flex items-start space-x-4">
+                    <div class="text-orange-500 bg-orange-50 p-2 rounded-lg"><i data-lucide="shield-check"></i></div>
+                    <div><h4 class="font-bold text-slate-800">Şeffaf Ekspertiz</h4><p class="text-sm text-slate-600 mt-1">Motordaki ufak kusuru bile söylemek güveni artırır. Nitelikli lead sağlar.</p></div>
+                </div>
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-100 flex items-start space-x-4">
+                    <div class="text-orange-500 bg-orange-50 p-2 rounded-lg"><i data-lucide="bar-chart-4"></i></div>
+                    <div><h4 class="font-bold text-slate-800">Finansal Rehberlik</h4><p class="text-sm text-slate-600 mt-1">Kredi/takas sürecini basitleştirir, satın alma motivasyonunu tetikler.</p></div>
+                </div>
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-100 flex items-start space-x-4">
+                    <div class="text-orange-500 bg-orange-50 p-2 rounded-lg"><i data-lucide="truck"></i></div>
+                    <div><h4 class="font-bold text-slate-800">Mega Stok & Tesis</h4><p class="text-sm text-slate-600 mt-1">Drone çekimleriyle 'merdiven altı değil, dev pazar' algısı yaratır.</p></div>
+                </div>
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-100 flex items-start space-x-4">
+                    <div class="text-orange-500 bg-orange-50 p-2 rounded-lg"><i data-lucide="users"></i></div>
+                    <div><h4 class="font-bold text-slate-800">Esnaf Samimiyeti</h4><p class="text-sm text-slate-600 mt-1">Danışmanların doğal dili markayı insanlaştırır, aidiyet kurar.</p></div>
+                </div>
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-100 flex items-start space-x-4">
+                    <div class="text-orange-500 bg-orange-50 p-2 rounded-lg"><i data-lucide="play-circle"></i></div>
+                    <div><h4 class="font-bold text-slate-800">Korna Ritüeli</h4><p class="text-sm text-slate-600 mt-1">Teslimatta kornaya basan müşteri videoları diğer alıcıları teşvik eder.</p></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- --- TAB: İÇERİK --- -->
+        <div id="icerik" class="tab-content">
+            <div class="mb-6 bg-slate-800 text-white p-4 rounded-xl flex items-center justify-between">
+                <div><h3 class="font-bold">Format Karması</h3><p class="text-sm text-slate-300">50% Reels/TikTok | 20% Carousel | 20% Story | 10% Canlı/UGC</p></div>
+                <i data-lucide="video" class="text-orange-500 opacity-80 w-8 h-8"></i>
+            </div>
+            <div id="video-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Video cards will be injected here or hardcoded for performance -->
+                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm relative overflow-hidden group">
+                    <span class="text-xs font-bold px-2 py-1 bg-slate-100 text-slate-600 rounded-md mb-2 inline-block">Fiyat Danışmanlığı</span>
+                    <h4 class="text-lg font-bold text-slate-800 mt-1">2 Milyona Ne Alınır?</h4>
+                    <p class="text-slate-600 text-sm mt-2"><strong>Hook:</strong> "Cebinizde 2 Milyon var ve çekici arıyorsunuz..."</p>
+                    <div class="mt-4 flex items-center justify-between border-t border-slate-100 pt-3">
+                        <span class="text-xs text-slate-400">Pillar: Finansal Rehberlik</span>
+                    </div>
+                </div>
+                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm relative overflow-hidden group">
+                    <span class="text-xs font-bold px-2 py-1 bg-slate-100 text-slate-600 rounded-md mb-2 inline-block">ASMR / Lüks</span>
+                    <h4 class="text-lg font-bold text-slate-800 mt-1">ASMR Kabin İçi</h4>
+                    <p class="text-slate-600 text-sm mt-2"><strong>Hook:</strong> (Sadece V8 Motor Sesi)</p>
+                    <div class="mt-4 flex items-center justify-between border-t border-slate-100 pt-3">
+                        <span class="text-xs text-slate-400">Pillar: Mega Stok</span>
+                    </div>
+                </div>
+                <!-- ... More video cards -->
+            </div>
+        </div>
+
+        <!-- --- TAB: TAKVİM --- -->
+        <div id="takvim" class="tab-content">
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-50 text-slate-600 border-b border-slate-200 text-sm uppercase tracking-wider">
+                                <th class="p-4 font-semibold">Gün / Tarih</th>
+                                <th class="p-4 font-semibold">Format / Kanal</th>
+                                <th class="p-4 font-semibold">İçerik Konusu</th>
+                                <th class="p-4 font-semibold">Saat</th>
+                            </tr>
+                        </thead>
+                        <tbody id="calendar-body" class="text-slate-700">
+                            <!-- JS will inject rows here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- --- TAB: REKLAM --- -->
+        <div id="reklam" class="tab-content grid md:grid-cols-3 gap-6">
+            <div class="bg-white p-6 rounded-xl border-t-4 border-blue-400 shadow-sm">
+                <div class="h-10 w-10 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center mb-4"><i data-lucide="target"></i></div>
+                <h3 class="font-bold text-lg mb-2">1. Keşif (Top Funnel)</h3>
+                <p class="text-slate-600 text-sm mb-4">Yeni kitlelere tesisi ve büyük stoğu gösterme. Marka bilinirliği artışı.</p>
+                <ul class="text-sm text-slate-500 space-y-1 border-t pt-3 border-slate-100">
+                    <li><strong>Bütçe:</strong> %20</li>
+                    <li><strong>İçerik:</strong> Drone Tesis Turu</li>
+                    <li><strong>KPI:</strong> CPM (Gösterim Maliyeti)</li>
+                </ul>
+            </div>
+            <div class="bg-white p-6 rounded-xl border-t-4 border-orange-500 shadow-sm transform scale-105 z-10 relative">
+                <div class="absolute top-0 right-0 bg-orange-500 text-white text-xs font-bold px-3 py-1 rounded-bl-lg rounded-tr-xl uppercase">Ana Odak</div>
+                <div class="h-10 w-10 bg-orange-100 text-orange-600 rounded-lg flex items-center justify-center mb-4"><i data-lucide="phone"></i></div>
+                <h3 class="font-bold text-lg mb-2">2. Trafik & Lead</h3>
+                <p class="text-slate-600 text-sm mb-4">Doğrudan satış ve WhatsApp iletişimine yönlendiren kampanyalar.</p>
+                <ul class="text-sm text-slate-500 space-y-1 border-t pt-3 border-slate-100">
+                    <li><strong>Bütçe:</strong> %60</li>
+                    <li><strong>İçerik:</strong> Fırsat Araçları, Finans</li>
+                    <li><strong>KPI:</strong> CPL / WhatsApp Click</li>
+                </ul>
+            </div>
+            <div class="bg-white p-6 rounded-xl border-t-4 border-green-500 shadow-sm">
+                <div class="h-10 w-10 bg-green-100 text-green-600 rounded-lg flex items-center justify-center mb-4"><i data-lucide="shield-check"></i></div>
+                <h3 class="font-bold text-lg mb-2">3. Remarketing</h3>
+                <p class="text-slate-600 text-sm mb-4">Daha önce etkileşime girenleri ikna etme ve güven aşılama.</p>
+                <ul class="text-sm text-slate-500 space-y-1 border-t pt-3 border-slate-100">
+                    <li><strong>Bütçe:</strong> %20</li>
+                    <li><strong>İçerik:</strong> Müşteri Teslimatları</li>
+                    <li><strong>KPI:</strong> Satışa Dönüşüm</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- --- TAB: AKSİYON --- -->
+        <div id="aksiyon" class="tab-content max-w-3xl">
+            <div class="bg-white p-6 md:p-8 rounded-xl shadow-sm border border-slate-200">
+                <h3 class="text-xl font-bold text-slate-800 mb-6 flex items-center">İlk 7 Günde Yapılacaklar</h3>
+                <div id="checklist-container" class="space-y-3">
+                    <!-- JS will inject checklist items -->
+                </div>
+                <div class="mt-8 pt-6 border-t border-slate-100">
+                    <a href="https://wa.me/905322426012?text=Merhaba,%20strateji%20raporunu%20inceledim%20ve%20onayl%C4%B1yorum.%20Ba%C5%9Flayabiliriz!" target="_blank" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-4 px-4 rounded-lg transition-all flex items-center justify-center text-center">
+                        Stratejiyi Onayla ve Başla
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+    // Initialize Lucide Icons
+    lucide.createIcons();
+
+    // Data for dynamic rendering
+    const calendarData = [
+        { day: "1. Gün (Pzt)", format: "Reels / TikTok", content: "2 Milyona Ne Alınır?", time: "18:30" },
+        { day: "2. Gün (Sal)", format: "IG Story (3x)", content: "Sahadan Anlık Stok + Anket", time: "Gün İçi" },
+        { day: "3. Gün (Çar)", format: "Reels / Shorts", content: "Ekspertizde Gözden Kaçanlar", time: "18:30" },
+        { day: "4. Gün (Per)", format: "Carousel", content: "Hangi Dorse Neye Uygun? (Rehber)", time: "14:00" },
+        { day: "5. Gün (Cum)", format: "Reels / TikTok", content: "Ahmet Usta Korna Ritüeli", time: "19:00" },
+        { day: "6. Gün (Cmt)", format: "Reels", content: "Drone ile Tır Pazarına Giriş", time: "14:00" },
+        { day: "7. Gün (Paz)", format: "IG Story", content: "Haftanın Özeti / Pazar Sohbeti", time: "12:00" },
+        { day: "8. Gün (Pzt)", format: "Reels / TikTok", content: "Araç Temizleme (Before/After)", time: "18:30" },
+        { day: "9. Gün (Sal)", format: "YT Shorts / IG", content: "360 Derece Kabin İçi Sanal Tur", time: "18:30" },
+        { day: "10. Gün (Çar)", format: "Reels / Shorts", content: "ASMR Kabin İçi (V8 Motor Sesi)", time: "19:00" }
+    ];
+
+    const checklistData = [
+        "Bio kısmını 'Türkiye'nin En Büyük Ticari Araç Pazarı' olarak güncelle.",
+        "Haftalık çekim gününü belirle (Örn: Salı, Tuzla Şubesi).",
+        "İlk 5 video fikri için araçları yıkat ve hazırlat.",
+        "Satış danışmanına strateji raporunu briefle.",
+        "İlk 5 videoyu çek, stokla ve kurgularını tamamla.",
+        "WhatsApp Business 'Karşılama Mesajı'nı yenile.",
+        "Meta üzerinden ilk Lead (Potansiyel Müşteri) reklamını yayına al."
+    ];
+
+    // Page titles mapping
+    const titles = {
+        ozet: "Marka Özeti ve Hedefler",
+        kitle: "Hedef Kitle Personaları",
+        strateji: "Otorite İnşası ve Konumlandırma",
+        icerik: "Viral Kısa Video Kütüphanesi",
+        takvim: "Örnek İçerik Takvimi (İlk 10 Gün)",
+        reklam: "Reklam, Dağıtım ve Ölçümleme",
+        aksiyon: "İlk 7 Günlük Uygulama Planı"
+    };
+
+    // Tab switcher function
+    function showTab(tabId, element) {
+        // Hide all tabs
+        document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+        // Show selected tab
+        document.getElementById(tabId).classList.add('active');
+        
+        // Update sidebar items
+        document.querySelectorAll('.sidebar-item').forEach(item => item.classList.remove('active'));
+        element.classList.add('active');
+
+        // Update title
+        document.getElementById('page-title').innerText = titles[tabId];
+        
+        // On mobile, scroll to top when tab changes
+        if (window.innerWidth < 768) {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    }
+
+    // Populate Calendar
+    const calendarBody = document.getElementById('calendar-body');
+    calendarData.forEach(row => {
+        const tr = document.createElement('tr');
+        tr.className = "border-b border-slate-100 hover:bg-slate-50";
+        tr.innerHTML = `
+            <td class="p-4 whitespace-nowrap font-medium">${row.day}</td>
+            <td class="p-4"><span class="bg-slate-100 text-slate-700 px-2 py-1 rounded text-xs">${row.format}</span></td>
+            <td class="p-4">${row.content}</td>
+            <td class="p-4 text-sm">${row.time}</td>
+        `;
+        calendarBody.appendChild(tr);
+    });
+
+    // Populate Checklist
+    const checklistContainer = document.getElementById('checklist-container');
+    checklistData.forEach((text, index) => {
+        const div = document.createElement('div');
+        div.className = "flex items-start p-3 rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100 cursor-pointer transition-colors";
+        div.onclick = function() {
+            const circle = this.querySelector('.check-circle');
+            const span = this.querySelector('.check-text');
+            circle.classList.toggle('bg-green-500');
+            circle.classList.toggle('border-green-500');
+            circle.classList.toggle('bg-white');
+            span.classList.toggle('line-through');
+            span.classList.toggle('opacity-60');
+        };
+        div.innerHTML = `
+            <div class="check-circle mt-0.5 w-6 h-6 flex-shrink-0 rounded border border-slate-300 bg-white flex items-center justify-center mr-3 transition-colors">
+                <i data-lucide="check" class="w-4 h-4 text-white"></i>
+            </div>
+            <span class="check-text text-slate-700 select-none">${text}</span>
+        `;
+        checklistContainer.appendChild(div);
+    });
+
+    // Re-run Lucide for injected elements
+    lucide.createIcons();
+</script>
+
+</body>
+</html>
