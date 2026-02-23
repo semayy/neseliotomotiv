@@ -1,449 +1,383 @@
-<!DOCTYPE html>
-<html lang="tr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mui Medya | Full Creative Proposal x Yuppie</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --mui-purple: #7C3AED;
-            --mui-pink: #DB2777;
-            --mui-green: #10B981;
-            --mui-bg: #FAF9FF;
-        }
-        body { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            background-color: var(--mui-bg); 
-            color: #1F2937; 
-            scroll-behavior: smooth;
-        }
-        h1, h2, h3, .serif { font-family: 'Playfair Display', serif; }
+import React, { useState } from 'react';
+import { 
+  Truck, Users, ShieldCheck, Target, Video, 
+  CalendarDays, BarChart4, CheckSquare, ChevronRight, 
+  PlayCircle, AlertCircle, Phone
+} from 'lucide-react';
+
+// --- DATA ---
+const personas = [
+  {
+    id: 1,
+    title: "Bireysel Esnaf / Şoför",
+    motivation: "Kendi çekicisini alıp patron olmak",
+    objection: "Kredim çıkar mı? Araç yolda bırakır mı?",
+    trigger: "Finansman kolaylığı, dayanıklılık",
+    cta: "Peşinatını ayarla, gerisini bize bırak!"
+  },
+  {
+    id: 2,
+    title: "Büyüyen KOBİ Lojistikçisi",
+    motivation: "İşe yetişmek için hızlıca filo genişletmek",
+    objection: "Araçlar yorgun mu? Faturası tam mı?",
+    trigger: "Toplu alım avantajı, kurumsal güven",
+    cta: "Filo özel fiyatları için satış danışmanımızla görüşün."
+  },
+  {
+    id: 3,
+    title: "Yatırımcı / Hafriyatçı",
+    motivation: "Projeyi yetiştirmek için acil sağlam damper",
+    objection: "Tonaja dayanır mı? Şasi işlemli mi?",
+    trigger: "Ağır şartlara dayanıklı araçlar",
+    cta: "Ağır şarta hazır araçlar sahaya inmek için bekliyor."
+  }
+];
+
+const pillars = [
+  { icon: <ShieldCheck size={24}/>, title: "Şeffaf Ekspertiz", desc: "Motordaki ufak kusuru bile söylemek güveni artırır. Nitelikli lead sağlar." },
+  { icon: <BarChart4 size={24}/>, title: "Finansal Rehberlik", desc: "Kredi/takas sürecini basitleştirir, satın alma motivasyonunu tetikler." },
+  { icon: <Truck size={24}/>, title: "Mega Stok & Tesis", desc: "Drone çekimleriyle 'merdiven altı değil, dev pazar' algısı yaratır." },
+  { icon: <Users size={24}/>, title: "Esnaf Samimiyeti", desc: "Danışmanların doğal dili markayı insanlaştırır, aidiyet kurar." },
+  { icon: <PlayCircle size={24}/>, title: "Korna Ritüeli (Kanıt)", desc: "Teslimatta kornaya basan müşteri videoları diğer alıcıları teşvik eder." }
+];
+
+const videoIdeas = [
+  { title: "2 Milyona Ne Alınır?", format: "Fiyat Danışmanlığı", hook: "Cebinizde 2 Milyon var ve çekici arıyorsunuz...", pillar: "Finansal Rehberlik" },
+  { title: "ASMR Kabin İçi", format: "ASMR / Lüks", hook: "(Sadece V8 Motor Sesi)", pillar: "Mega Stok" },
+  { title: "Ekspertizde Gözden Kaçanlar", format: "Myth-Busting", hook: "Dorse alırken brandaya değil, buraya bakacaksın!", pillar: "Şeffaf Ekspertiz" },
+  { title: "Kredi Çıkmaz Deme", format: "POV / Çözüm", hook: "Bankalar kredi vermiyor mu? Bize gelmedin.", pillar: "Finansal Rehberlik" },
+  { title: "Fiyatı Tahmin Et", format: "Gamification", hook: "Bu 2020 Volvo'nun fiyatını bilen ilk kişiye...", pillar: "Esnaf Samimiyeti" },
+  { title: "Ahmet Usta Teslimat", format: "Duygu / Kanıt", hook: "Ahmet Usta'nın hayali bugün gerçek oldu!", pillar: "Sosyal Kanıt" },
+  { title: "Araç Temizleme", format: "Before/After", hook: "Şantiyeden çıkan bu aracın son haline inanamayacaksınız.", pillar: "Şeffaf Ekspertiz" },
+  { title: "360° Kabin Turu", format: "İnteraktif", hook: "Telefonu çevirerek kabini kendin gez!", pillar: "Mega Stok" }
+];
+
+const calendarData = [
+  { day: "1. Gün (Pzt)", format: "Reels / TikTok", content: "2 Milyona Ne Alınır?", time: "18:30" },
+  { day: "2. Gün (Sal)", format: "IG Story (3x)", content: "Sahadan Anlık Stok + Anket", time: "Gün İçi" },
+  { day: "3. Gün (Çar)", format: "Reels / Shorts", content: "Ekspertizde Gözden Kaçanlar", time: "18:30" },
+  { day: "4. Gün (Per)", format: "Carousel", content: "Hangi Dorse Neye Uygun? (Rehber)", time: "14:00" },
+  { day: "5. Gün (Cum)", format: "Reels / TikTok", content: "Ahmet Usta Korna Ritüeli", time: "19:00" },
+  { day: "6. Gün (Cmt)", format: "Reels", content: "Drone ile Tır Pazarına Giriş", time: "14:00" },
+  { day: "7. Gün (Paz)", format: "IG Story", content: "Haftanın Özeti / Pazar Sohbeti", time: "12:00" },
+  { day: "8. Gün (Pzt)", format: "Reels / TikTok", content: "Araç Temizleme (Before/After)", time: "18:30" },
+  { day: "9. Gün (Sal)", format: "YT Shorts / IG", content: "360 Derece Kabin İçi Sanal Tur", time: "18:30" },
+  { day: "10. Gün (Çar)", format: "Reels / Shorts", content: "ASMR Kabin İçi (V8 Motor Sesi)", time: "19:00" }
+];
+
+export default function App() {
+  const [activeTab, setActiveTab] = useState('ozet');
+  const [checklist, setChecklist] = useState([
+    { id: 1, text: "Bio kısmını 'Türkiye'nin En Büyük Ticari Araç Pazarı' olarak güncelle.", done: false },
+    { id: 2, text: "Haftalık çekim gününü belirle (Örn: Salı, Tuzla Şubesi).", done: false },
+    { id: 3, text: "İlk 5 video fikri için araçları yıkat ve hazırlat.", done: false },
+    { id: 4, text: "Satış danışmanına strateji raporunu briefle.", done: false },
+    { id: 5, text: "İlk 5 videoyu çek, stokla ve kurgularını tamamla.", done: false },
+    { id: 6, text: "WhatsApp Business 'Karşılama Mesajı'nı yenile.", done: false },
+    { id: 7, text: "Meta üzerinden ilk Lead (Potansiyel Müşteri) reklamını yayına al.", done: false },
+  ]);
+
+  const toggleChecklist = (id) => {
+    setChecklist(checklist.map(item => item.id === id ? { ...item, done: !item.done } : item));
+  };
+
+  const NavItem = ({ id, icon, label }) => (
+    <button
+      onClick={() => setActiveTab(id)}
+      className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-all ${
+        activeTab === id 
+          ? 'bg-orange-500 text-white shadow-md' 
+          : 'text-slate-300 hover:bg-slate-800 hover:text-white'
+      }`}
+    >
+      {icon}
+      <span className="font-medium">{label}</span>
+    </button>
+  );
+
+  return (
+    <div className="min-h-screen bg-slate-50 flex flex-col md:flex-row font-sans">
+      {/* Sidebar */}
+      <aside className="w-full md:w-64 bg-slate-900 text-white flex flex-col shadow-xl z-10">
+        <div className="p-6 border-b border-slate-800">
+          <h1 className="text-5xl tracking-wide" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>
+            NEŞELİ<span className="text-orange-500">.</span>
+          </h1>
+          <p className="text-[11px] text-slate-400 mt-1 uppercase tracking-widest font-semibold">Dijital Strateji Raporu</p>
+        </div>
+        <nav className="flex-1 px-4 py-6 space-y-2">
+          <NavItem id="ozet" icon={<Target size={20} />} label="Marka Özeti" />
+          <NavItem id="kitle" icon={<Users size={20} />} label="Hedef Kitle" />
+          <NavItem id="strateji" icon={<ShieldCheck size={20} />} label="Otorite & Strateji" />
+          <NavItem id="icerik" icon={<Video size={20} />} label="Viral Video Fikirleri" />
+          <NavItem id="takvim" icon={<CalendarDays size={20} />} label="İçerik Takvimi" />
+          <NavItem id="reklam" icon={<BarChart4 size={20} />} label="Reklam & KPI" />
+          <NavItem id="aksiyon" icon={<CheckSquare size={20} />} label="7 Günlük Aksiyon" />
+        </nav>
         
-        /* Layout Stability Guard - Prevent "kayma" */
-        .chart-container { 
-            position: relative; 
-            width: 100%; 
-            max-width: 600px; 
-            margin-left: auto; 
-            margin-right: auto; 
-            height: 280px; 
-            max-height: 350px; 
-        }
-        @media (min-width: 768px) {
-            .chart-container { height: 350px; }
-        }
-
-        .gradient-bg { background: linear-gradient(135deg, var(--mui-purple), var(--mui-pink)); }
-        .package-card { 
-            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1); 
-            border: 1px solid rgba(124, 58, 237, 0.1); 
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-        .package-card:hover { 
-            transform: translateY(-8px); 
-            box-shadow: 0 20px 40px rgba(124, 58, 237, 0.1); 
-        }
-        .active-pkg { 
-            border: 2px solid var(--mui-purple); 
-            background: white; 
-            box-shadow: 0 15px 30px rgba(124, 58, 237, 0.15); 
-        }
-        .glass-morphism { 
-            background: rgba(255, 255, 255, 0.85); 
-            backdrop-filter: blur(12px); 
-            border-bottom: 1px solid rgba(124, 58, 237, 0.1); 
-        }
-        .gradient-text {
-            background: linear-gradient(135deg, var(--mui-purple), var(--mui-pink));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        /* Prevention of horizontal overflow */
-        .no-slip { overflow-x: hidden; width: 100%; max-width: 100vw; }
-    </style>
-    <!-- Chosen Palette: Mui Identity (Purple, Pink, Emerald Green) -->
-    <!-- Application Structure Plan:
-        1. Sticky Header: Mui Medya | Full Creative Proposal branding.
-        2. Hero: Yuppie brand story focusing on the 2019 Ankara standard-setting journey.
-        3. Analysis: Interactive SWOT radar chart for market positioning.
-        4. Technical module: Interactive Laser Comparison (Classic vs New) using mobile-friendly grids.
-        5. Package Selector: 3 tiers (80k, 130k, 200k) with clearly separated mobile cards to prevent misalignment.
-    -->
-    <!-- Visualization & Content Choices:
-        - SWOT Radar: Displays technical, market, and branding score.
-        - Laser Grid: Comparative table layout for seans, results, and ara tarama.
-        - Counter Cards: Displaying processing times (e.g., 2-3 hours for full leg).
-    -->
-    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
-</head>
-<body class="no-slip">
-
-    <!-- Navbar -->
-    <nav class="sticky top-0 z-50 glass-morphism">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 sm:h-20 flex items-center justify-between">
-            <div class="flex items-center space-x-2 sm:space-x-3">
-                <div class="flex items-center shrink-0">
-                    <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full gradient-bg flex items-center justify-center text-white font-bold text-lg sm:text-xl shadow-lg">m</div>
-                    <div class="ml-1.5 sm:ml-2 w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 rounded-full bg-emerald-500 shadow-sm border-2 border-white"></div>
-                </div>
-                <div class="flex flex-col sm:flex-row sm:items-baseline overflow-hidden">
-                    <span class="text-lg sm:text-xl font-bold tracking-tight text-gray-900 leading-none">muimedya</span>
-                    <span class="hidden sm:inline text-gray-300 mx-2 font-light">|</span>
-                    <span class="text-[8px] sm:text-[10px] md:text-sm font-bold uppercase tracking-[0.1em] text-purple-600 truncate">Full Creative Proposal</span>
-                </div>
-            </div>
-            <div class="hidden lg:flex space-x-6 xl:space-x-8 text-[11px] font-bold text-gray-500 uppercase tracking-widest">
-                <a href="#hikaye" class="hover:text-purple-600 transition-colors">Hikaye</a>
-                <a href="#strateji" class="hover:text-purple-600 transition-colors">Strateji</a>
-                <a href="#lazer" class="hover:text-purple-600 transition-colors">Lazer</a>
-                <a href="#teklif" class="hover:text-purple-600 transition-colors">Teklifler</a>
-            </div>
+        {/* Footer in Sidebar - Updated for Corporate Look */}
+        <div className="p-5 mt-auto border-t border-slate-800 text-center">
+          <div className="mb-2">
+            <span className="text-[10px] text-slate-500 uppercase tracking-[0.2em] block mb-1">Stratejik Partner</span>
+            <span className="text-xs text-slate-200 font-bold tracking-wider">MUIMEDYA</span>
+          </div>
+          <p className="text-[9px] text-slate-500 leading-relaxed italic">
+            Bu rapor Neşeli için özel olarak hazırlanmıştır.<br/>
+            © 2026 Dijital Performans Ajansı. Tüm Hakları Saklıdır.
+          </p>
         </div>
-    </nav>
+      </aside>
 
-    <main>
-        <!-- Section 1: Hero & Brand Story -->
-        <section id="hikaye" class="pt-10 sm:pt-20 pb-12 sm:pb-16 px-4 sm:px-6">
-            <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 items-center">
-                <div class="space-y-6 text-center lg:text-left">
-                    <div class="inline-block px-4 py-1.5 rounded-full bg-purple-50 text-purple-700 text-[9px] sm:text-[10px] font-bold uppercase tracking-widest border border-purple-100">
-                        Ankara Güzellik Standartları 2019-2024
-                    </div>
-                    <h1 class="text-3xl sm:text-5xl lg:text-7xl font-bold leading-tight text-gray-900">
-                        Yuppie: <span class="gradient-text serif italic">Standartları</span> Belirleyen Vizyon.
-                    </h1>
-                    <p class="text-gray-600 leading-relaxed text-sm sm:text-lg">
-                        2019'da Ankara'ya geldiğinizde gördüğünüz o "sterilizasyon ve teknik" boşluğu, bugün Yuppie'nin temel taşı. <strong>"Young Urban Professional"</strong> ruhunu temsil eden markanız için Mui Medya, sadece bir salon değil; bir "prestij otoritesi" kurguluyor.
-                    </p>
-                    <div class="grid grid-cols-2 gap-4 sm:gap-6">
-                        <div class="p-4 bg-white rounded-2xl shadow-sm border border-purple-100 border-b-4 border-b-purple-500 text-center">
-                            <span class="block text-lg sm:text-2xl font-bold text-purple-700">Yuppie</span>
-                            <span class="text-[9px] sm:text-[10px] text-gray-400 uppercase font-bold tracking-widest mt-1 block leading-tight">Pozitif Enerji</span>
-                        </div>
-                        <div class="p-4 bg-white rounded-2xl shadow-sm border border-pink-100 border-b-4 border-b-pink-500 text-center">
-                            <span class="block text-lg sm:text-2xl font-bold text-pink-600">Professional</span>
-                            <span class="text-[9px] sm:text-[10px] text-gray-400 uppercase font-bold tracking-widest mt-1 block leading-tight">Kariyer Odaklı</span>
-                        </div>
-                    </div>
+      {/* Main Content */}
+      <main className="flex-1 p-6 md:p-10 overflow-y-auto">
+        <header className="mb-8 border-b border-slate-200 pb-4">
+          <h2 className="text-3xl font-bold text-slate-800 capitalize">
+            {activeTab === 'ozet' && 'Marka Özeti ve Hedefler'}
+            {activeTab === 'kitle' && 'Hedef Kitle Personaları'}
+            {activeTab === 'strateji' && 'Otorite İnşası ve Konumlandırma'}
+            {activeTab === 'icerik' && 'Viral Kısa Video Kütüphanesi'}
+            {activeTab === 'takvim' && 'Örnek İçerik Takvimi (İlk 10 Gün)'}
+            {activeTab === 'reklam' && 'Reklam, Dağıtım ve Ölçümleme'}
+            {activeTab === 'aksiyon' && 'İlk 7 Günlük Uygulama Planı'}
+          </h2>
+          <p className="text-slate-500 mt-2">Sektörde güvenin, dijitalde otoritenin yeni yüzü.</p>
+        </header>
+
+        {/* --- TAB: ÖZET --- */}
+        {activeTab === 'ozet' && (
+          <div className="space-y-6 animate-fade-in">
+            <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+              <h3 className="text-xl font-bold text-slate-800 mb-4 flex items-center">
+                <AlertCircle className="text-orange-500 mr-2" /> Mevcut Durum & Odak
+              </h3>
+              <p className="text-slate-600 leading-relaxed mb-4">
+                Neşeli Kamyon Tır Pazarı (Tuzla & Ankara) fiziki olarak çok güçlü bir altyapıya sahip olmasına rağmen, dijital varlığı daha çok statik ilanlara dayanmaktadır. Yeni stratejinin temel amacı: <strong>Statik ilan panosundan, dinamik, video odaklı ve güven veren bir medya organına dönüşmektir.</strong>
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+                <div className="bg-slate-50 p-4 rounded-lg border border-slate-100">
+                  <div className="text-orange-500 font-bold text-lg mb-1">Ana Hedef</div>
+                  <div className="text-slate-700">WhatsApp ve form üzerinden nitelikli Lead (Talep) toplamak.</div>
                 </div>
-                <div class="relative mt-4 lg:mt-0">
-                    <div class="absolute -inset-4 gradient-bg opacity-10 rounded-[3rem] blur-2xl"></div>
-                    <div class="relative bg-white p-6 sm:p-10 rounded-3xl shadow-xl border border-purple-50">
-                        <h3 class="text-xl font-bold mb-6 text-gray-800 border-b pb-4">Neden Yuppie?</h3>
-                        <p class="text-xs sm:text-sm text-gray-500 italic mb-6">"Ankara'ya medikal manikürü, gerçek sterilizasyonu ve doğru tekniği 2019'da biz getirdik."</p>
-                        <div class="space-y-4">
-                            <div class="flex items-start">
-                                <div class="w-7 h-7 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center font-bold mr-3 shrink-0 text-xs">1</div>
-                                <p class="text-xs sm:text-sm text-gray-600"><strong class="text-gray-900">Dürüst Teknik:</strong> Kanatmadan medikal manikür ve doğru mimari.</p>
-                            </div>
-                            <div class="flex items-start">
-                                <div class="w-7 h-7 rounded-full bg-pink-100 text-pink-600 flex items-center justify-center font-bold mr-3 shrink-0 text-xs">2</div>
-                                <p class="text-xs sm:text-sm text-gray-600"><strong class="text-gray-900">Sterilizasyon Sözü:</strong> Otoklav ve tavizsiz hijyen kültürü.</p>
-                            </div>
-                            <div class="flex items-start">
-                                <div class="w-7 h-7 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold mr-3 shrink-0 text-xs">3</div>
-                                <p class="text-xs sm:text-sm text-gray-600"><strong class="text-gray-900">Adil Lazer:</strong> Dakika bazlı ödeme ve sonuç odaklı teknoloji.</p>
-                            </div>
-                        </div>
-                    </div>
+                <div className="bg-slate-50 p-4 rounded-lg border border-slate-100">
+                  <div className="text-orange-500 font-bold text-lg mb-1">Öncelikli Kanallar</div>
+                  <div className="text-slate-700">Instagram Reels, TikTok, YouTube Shorts.</div>
                 </div>
+                <div className="bg-slate-50 p-4 rounded-lg border border-slate-100">
+                  <div className="text-orange-500 font-bold text-lg mb-1">En Büyük Engeli Aşma</div>
+                  <div className="text-slate-700">"Hasar kaydı ve fiyat belirsizliği" itirazlarını şeffaflıkla yıkmak.</div>
+                </div>
+              </div>
             </div>
-        </section>
+          </div>
+        )}
 
-        <!-- Section 2: Strategy -->
-        <section id="strateji" class="py-12 sm:py-24 bg-white border-y border-gray-100">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6">
-                <div class="text-center max-w-2xl mx-auto mb-10 sm:mb-16">
-                    <h2 class="text-2xl sm:text-4xl font-bold text-gray-900 mb-4 text-center">Stratejik Analiz</h2>
-                    <p class="text-sm text-gray-500">Mui Medya analiziyle Yuppie'nin pazar gücü.</p>
+        {/* --- TAB: HEDEF KİTLE --- */}
+        {activeTab === 'kitle' && (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-fade-in">
+            {personas.map(persona => (
+              <div key={persona.id} className="bg-white p-6 rounded-xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow">
+                <div className="w-12 h-12 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center mb-4">
+                  <Users size={24} />
                 </div>
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-                    <div class="chart-container order-2 lg:order-1">
-                        <canvas id="swotChart"></canvas>
-                    </div>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 order-1 lg:order-2">
-                        <div class="p-5 rounded-2xl bg-purple-50 border border-purple-100">
-                            <h4 class="font-bold text-purple-700 mb-2 flex items-center text-sm">
-                                <span class="mr-2">💪</span> Güçlü Yanlar
-                            </h4>
-                            <p class="text-[10px] sm:text-xs text-purple-900/70 leading-relaxed">
-                                Sektörel tecrübe (2019+), sterilizasyon kültürü ve sadık Yuppie kitlesi.
-                            </p>
-                        </div>
-                        <div class="p-5 rounded-2xl bg-emerald-50 border border-emerald-100">
-                            <h4 class="font-bold text-emerald-700 mb-2 flex items-center text-sm">
-                                <span class="mr-2">🚀</span> Fırsatlar
-                            </h4>
-                            <p class="text-[10px] sm:text-xs text-emerald-900/70 leading-relaxed">
-                                Yeni nesil lazer sistemiyle hızlı dökülme ve erkek lazer pazarı.
-                            </p>
-                        </div>
-                    </div>
+                <h3 className="text-xl font-bold text-slate-800 mb-3">{persona.title}</h3>
+                <div className="space-y-3 text-sm">
+                  <p><strong>Motivasyon:</strong> <span className="text-slate-600">{persona.motivation}</span></p>
+                  <p><strong>İtiraz/Korku:</strong> <span className="text-slate-600">{persona.objection}</span></p>
+                  <p><strong>İçerik Tetikleyicisi:</strong> <span className="text-slate-600">{persona.trigger}</span></p>
+                  <div className="pt-3 mt-3 border-t border-slate-100">
+                    <span className="text-xs font-bold text-slate-400 uppercase">Önerilen CTA</span>
+                    <p className="text-orange-600 font-medium mt-1">"{persona.cta}"</p>
+                  </div>
                 </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* --- TAB: STRATEJİ --- */}
+        {activeTab === 'strateji' && (
+          <div className="space-y-6 animate-fade-in">
+            <h3 className="text-xl font-bold text-slate-800">5 Temel Otorite Direği</h3>
+            <p className="text-slate-500 mb-6">Her bir içerik bu 5 doğrudan birine hizmet etmeli ve nedensel olarak satışa bağlanmalıdır.</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {pillars.map((pillar, idx) => (
+                <div key={idx} className="bg-white p-5 rounded-xl shadow-sm border border-slate-100 flex items-start space-x-4">
+                  <div className="text-orange-500 bg-orange-50 p-2 rounded-lg">
+                    {pillar.icon}
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-slate-800">{pillar.title}</h4>
+                    <p className="text-sm text-slate-600 mt-1">{pillar.desc}</p>
+                  </div>
+                </div>
+              ))}
             </div>
-        </section>
+          </div>
+        )}
 
-        <!-- Section 3: Technical Module (Laser Data) -->
-        <section id="lazer" class="py-12 sm:py-24 bg-gray-900 text-white">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6">
-                <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 sm:mb-16 gap-6">
-                    <div class="max-w-xl">
-                        <h2 class="text-2xl sm:text-4xl font-bold mb-4">Yeni Nesil Lazer Verileri</h2>
-                        <p class="text-sm text-gray-400">Klasik yöntemleri geride bırakan, veri temelli Yuppie yaklaşımı.</p>
-                    </div>
-                    <div class="bg-purple-600 px-4 py-2 rounded-xl font-bold text-[10px] sm:text-xs uppercase tracking-widest shadow-lg">
-                        Adil Ödeme: Dakika Bazlı
-                    </div>
+        {/* --- TAB: İÇERİK --- */}
+        {activeTab === 'icerik' && (
+          <div className="animate-fade-in">
+             <div className="mb-6 bg-slate-800 text-white p-4 rounded-xl flex items-center justify-between">
+                <div>
+                  <h3 className="font-bold">Format Karması</h3>
+                  <p className="text-sm text-slate-300">50% Reels/TikTok | 20% Carousel | 20% Story | 10% Canlı/UGC</p>
                 </div>
-
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <!-- Comparison Table -->
-                    <div class="lg:col-span-2 rounded-2xl overflow-x-auto border border-gray-800 bg-gray-800/40 backdrop-blur-sm">
-                        <table class="w-full text-left border-collapse min-w-[500px]">
-                            <thead>
-                                <tr class="border-b border-gray-800 text-[9px] uppercase tracking-widest text-gray-500 font-bold">
-                                    <th class="p-6">Parametre</th>
-                                    <th class="p-6 text-center">Klasik Yöntem</th>
-                                    <th class="p-6 text-center text-pink-500">Yuppie Yeni Nesil</th>
-                                </tr>
-                            </thead>
-                            <tbody class="text-xs sm:text-sm">
-                                <tr class="border-b border-gray-800/50">
-                                    <td class="p-6 font-semibold">Seans Sayısı</td>
-                                    <td class="p-6 text-center text-gray-500">Ortalama 10</td>
-                                    <td class="p-6 text-center font-bold">Ortalama 5</td>
-                                </tr>
-                                <tr class="border-b border-gray-800/50">
-                                    <td class="p-6 font-semibold">Seans Sıklığı</td>
-                                    <td class="p-6 text-center text-gray-500">1.5 Ayda Bir</td>
-                                    <td class="p-6 text-center font-bold">1.5 Yılda Ort. 5 Kez</td>
-                                </tr>
-                                <tr class="border-b border-gray-800/50">
-                                    <td class="p-6 font-semibold">İlk Sonuç</td>
-                                    <td class="p-6 text-center text-gray-500">Biriken Etki</td>
-                                    <td class="p-6 text-center font-bold text-emerald-400">~%70 İlk Seansta</td>
-                                </tr>
-                                <tr>
-                                    <td class="p-6 font-semibold">Ara Tarama</td>
-                                    <td class="p-6 text-center text-gray-500">6-12 Ayda Bir</td>
-                                    <td class="p-6 text-center font-bold">İhtiyaç Kalmıyor</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <!-- Processing Times -->
-                    <div class="bg-white/5 p-8 rounded-2xl border border-white/10 flex flex-col justify-between">
-                        <h4 class="text-lg font-bold mb-6 flex items-center">
-                            <span class="mr-3 text-pink-500">⏳</span> İşlem Süreleri
-                        </h4>
-                        <div class="space-y-4 text-xs sm:text-sm">
-                            <div class="flex justify-between border-b border-white/5 pb-2">
-                                <span class="text-gray-400">Tüm Bacak</span>
-                                <span class="font-bold text-pink-500">2 - 3 Saat</span>
-                            </div>
-                            <div class="flex justify-between border-b border-white/5 pb-2">
-                                <span class="text-gray-400">Yarım Bacak</span>
-                                <span class="font-bold text-pink-500">1.5 - 2 Saat</span>
-                            </div>
-                            <div class="flex justify-between border-b border-white/5 pb-2">
-                                <span class="text-gray-400">Tüm Kol</span>
-                                <span class="font-bold text-pink-500">1 Saat</span>
-                            </div>
-                            <div class="flex justify-between border-b border-white/5 pb-2">
-                                <span class="text-gray-400">Bikini</span>
-                                <span class="font-bold text-pink-500">45 - 60 Dakika</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span class="text-gray-400">Koltuk Altı</span>
-                                <span class="font-bold text-pink-500">15 - 20 Dakika</span>
-                            </div>
-                        </div>
-                        <p class="mt-8 text-[9px] text-emerald-400 uppercase tracking-tighter leading-tight font-bold">
-                            ⚠️ Önemli: Kök olmadığında lazer etki etmez. İşlemden 1 ay önce ağda ve ip bırakılmalıdır.
-                        </p>
-                    </div>
+                <Video size={32} className="text-orange-500 opacity-80" />
+             </div>
+             
+             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {videoIdeas.map((video, idx) => (
+                <div key={idx} className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm relative overflow-hidden group">
+                  <div className="absolute top-0 left-0 w-1 h-full bg-orange-500 transform scale-y-0 group-hover:scale-y-100 transition-transform origin-bottom"></div>
+                  <span className="text-xs font-bold px-2 py-1 bg-slate-100 text-slate-600 rounded-md mb-2 inline-block">
+                    {video.format}
+                  </span>
+                  <h4 className="text-lg font-bold text-slate-800 mt-1">{video.title}</h4>
+                  <p className="text-slate-600 text-sm mt-2">
+                    <strong className="text-slate-700">Hook:</strong> "{video.hook}"
+                  </p>
+                  <div className="mt-4 flex items-center justify-between border-t border-slate-100 pt-3">
+                    <span className="text-xs text-slate-400">Pillar: {video.pillar}</span>
+                    <button className="text-orange-500 hover:text-orange-600 text-sm font-medium flex items-center">
+                      Detaylar <ChevronRight size={16} />
+                    </button>
+                  </div>
                 </div>
+              ))}
             </div>
-        </section>
+          </div>
+        )}
 
-        <!-- Section 4: Proposals (The 3 Packages) -->
-        <section id="teklif" class="py-12 sm:py-24 bg-stone-50">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6">
-                <div class="text-center max-w-2xl mx-auto mb-10 sm:mb-16">
-                    <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-4 text-center">Yıllık Yatırım Planları</h2>
-                    <p class="text-sm text-gray-500">Mui Medya titizliğiyle kurgulanmış 3 farklı vizyon.</p>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 items-stretch">
-                    <!-- Package 1 -->
-                    <div id="pkg-1" onclick="selectPackage(1)" class="package-card p-8 rounded-3xl bg-white cursor-pointer group">
-                        <div class="mb-10">
-                            <span class="text-[9px] font-bold text-purple-600 uppercase tracking-widest block mb-2">Digital First</span>
-                            <h3 class="text-xl sm:text-2xl font-bold text-gray-900">Motion Graphics</h3>
-                        </div>
-                        <div class="mb-10">
-                            <span class="text-4xl font-bold text-gray-900">80.000₺</span>
-                            <span class="text-xs text-gray-500 font-semibold">+ KDV / Ay</span>
-                        </div>
-                        <ul class="space-y-4 mb-10 text-xs sm:text-sm text-gray-600">
-                            <li class="flex items-center"><span class="w-1.5 h-1.5 bg-purple-600 rounded-full mr-3"></span> Tamamı Grafik İçerik</li>
-                            <li class="flex items-center"><span class="w-1.5 h-1.5 bg-purple-600 rounded-full mr-3"></span> 4-6 Adet Dinamik Reels</li>
-                            <li class="flex items-center"><span class="w-1.5 h-1.5 bg-purple-600 rounded-full mr-3"></span> 10-15 Adet Grafik Story</li>
-                        </ul>
-                        <button class="w-full py-4 rounded-2xl border-2 border-purple-50 group-hover:bg-purple-600 group-hover:text-white transition-all font-bold text-xs uppercase">Seç</button>
-                    </div>
-
-                    <!-- Package 2 -->
-                    <div id="pkg-2" onclick="selectPackage(2)" class="package-card active-pkg p-8 rounded-3xl cursor-pointer relative">
-                        <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-mui-gradient text-white text-[8px] font-bold px-4 py-1.5 rounded-full uppercase tracking-widest shadow-lg shadow-purple-500/30">En Çok Tercih Edilen</div>
-                        <div class="mb-10">
-                            <span class="text-[9px] font-bold text-pink-600 uppercase tracking-widest block mb-2">Growth Focus</span>
-                            <h3 class="text-xl sm:text-2xl font-bold text-gray-900">Yuppie Standard</h3>
-                        </div>
-                        <div class="mb-10">
-                            <span class="text-4xl font-bold text-gray-900">130.000₺</span>
-                            <span class="text-xs text-gray-500 font-semibold">+ KDV / Ay</span>
-                        </div>
-                        <ul class="space-y-4 mb-10 text-xs sm:text-sm text-gray-600">
-                            <li class="flex items-center font-bold text-gray-900"><span class="w-1.5 h-1.5 bg-pink-500 rounded-full mr-3"></span> 1 Gün Yerinde Çekim</li>
-                            <li class="flex items-center font-bold text-gray-900"><span class="w-1.5 h-1.5 bg-pink-500 rounded-full mr-3"></span> 8 Adet Profesyonel Reels</li>
-                            <li class="flex items-center font-bold text-gray-900"><span class="w-1.5 h-1.5 bg-pink-500 rounded-full mr-3"></span> 20 Adet Profesyonel Fotoğraf</li>
-                        </ul>
-                        <button class="w-full py-4 rounded-2xl gradient-bg text-white shadow-lg shadow-purple-500/20 font-bold text-xs uppercase">Seç</button>
-                    </div>
-
-                    <!-- Package 3 -->
-                    <div id="pkg-3" onclick="selectPackage(3)" class="package-card p-8 rounded-3xl bg-white cursor-pointer group">
-                        <div class="mb-10">
-                            <span class="text-[9px] font-bold text-emerald-600 uppercase tracking-widest block mb-2">Maximum Prestige</span>
-                            <h3 class="text-xl sm:text-2xl font-bold text-gray-900">Yuppie Elite</h3>
-                        </div>
-                        <div class="mb-10">
-                            <span class="text-4xl font-bold text-gray-900">200.000₺</span>
-                            <span class="text-xs text-gray-500 font-semibold">+ KDV / Ay</span>
-                        </div>
-                        <ul class="space-y-4 mb-10 text-xs sm:text-sm text-gray-600">
-                            <li class="flex items-center"><span class="w-1.5 h-1.5 bg-emerald-500 rounded-full mr-3"></span> 2 Gün Yerinde Çekim</li>
-                            <li class="flex items-center"><span class="w-1.5 h-1.5 bg-emerald-500 rounded-full mr-3"></span> 12 Adet Sinematik Reels</li>
-                            <li class="flex items-center"><span class="w-1.5 h-1.5 bg-emerald-500 rounded-full mr-3"></span> 40 Adet Premium Fotoğraf</li>
-                        </ul>
-                        <button class="w-full py-4 rounded-2xl border-2 border-emerald-50 group-hover:bg-emerald-600 group-hover:text-white transition-all font-bold text-xs uppercase">Seç</button>
-                    </div>
-                </div>
+        {/* --- TAB: TAKVİM --- */}
+        {activeTab === 'takvim' && (
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden animate-fade-in">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="bg-slate-50 text-slate-600 border-b border-slate-200 text-sm uppercase tracking-wider">
+                    <th className="p-4 font-semibold">Gün / Tarih</th>
+                    <th className="p-4 font-semibold">Format / Kanal</th>
+                    <th className="p-4 font-semibold">İçerik Konusu</th>
+                    <th className="p-4 font-semibold">Saat</th>
+                  </tr>
+                </thead>
+                <tbody className="text-slate-700">
+                  {calendarData.map((row, idx) => (
+                    <tr key={idx} className="border-b border-slate-100 hover:bg-slate-50">
+                      <td className="p-4 whitespace-nowrap font-medium">{row.day}</td>
+                      <td className="p-4">
+                        <span className="bg-slate-100 text-slate-700 px-2 py-1 rounded text-xs">
+                          {row.format}
+                        </span>
+                      </td>
+                      <td className="p-4">{row.content}</td>
+                      <td className="p-4 text-sm">{row.time}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
-        </section>
+          </div>
+        )}
 
-        <!-- Section 5: Strategy & Tone -->
-        <section class="py-12 sm:py-24 bg-white border-t border-gray-100">
-            <div class="max-w-4xl mx-auto px-4 sm:px-6 text-center">
-                <h2 class="text-2xl font-bold text-gray-900 mb-8 text-center">İletişim Dili ve Vizyon</h2>
-                <div class="p-8 sm:p-12 rounded-[2.5rem] bg-stone-50 border border-stone-200 shadow-inner relative overflow-hidden">
-                    <div class="absolute top-0 right-0 w-32 h-32 gradient-bg opacity-5 blur-3xl"></div>
-                    <p class="text-gray-700 italic leading-relaxed text-sm sm:text-lg mb-8">
-                        "Yuppie, Ankara'da sadece bir salon değil; 2019'dan beri süregelen bir <strong>mükemmeliyet standardıdır.</strong> Biz sadece manikür yapmıyoruz; sterilizasyon ve doğru tekniği bir yaşam tarzı olarak sunuyoruz. Lazerde ise en adil, en şeffaf ve en bilimsel sonucu vadediyoruz."
-                    </p>
-                    <div class="flex flex-wrap justify-center gap-3">
-                        <span class="px-4 py-2 bg-white rounded-full text-[9px] font-bold text-purple-600 border border-purple-100 shadow-sm uppercase tracking-widest">Profesyonel</span>
-                        <span class="px-4 py-2 bg-white rounded-full text-[9px] font-bold text-pink-600 border border-pink-100 shadow-sm uppercase tracking-widest">Pozitif</span>
-                        <span class="px-4 py-2 bg-white rounded-full text-[9px] font-bold text-emerald-600 border border-emerald-100 shadow-sm uppercase tracking-widest">Net</span>
-                    </div>
+        {/* --- TAB: REKLAM --- */}
+        {activeTab === 'reklam' && (
+          <div className="grid md:grid-cols-3 gap-6 animate-fade-in">
+             <div className="bg-white p-6 rounded-xl border-t-4 border-blue-400 shadow-sm">
+                <div className="h-10 w-10 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center mb-4">
+                  <Target size={20} />
                 </div>
+                <h3 className="font-bold text-lg mb-2">1. Keşif (Top Funnel)</h3>
+                <p className="text-slate-600 text-sm mb-4">Yeni kitlelere tesisi ve büyük stoğu gösterme. Marka bilinirliği artışı.</p>
+                <ul className="text-sm text-slate-500 space-y-1 border-t pt-3 border-slate-100">
+                  <li><strong>Bütçe Dağılımı:</strong> %20</li>
+                  <li><strong>İçerik:</strong> Drone Tesis Turu</li>
+                  <li><strong>Ana KPI:</strong> CPM (Gösterim Maliyeti)</li>
+                </ul>
+             </div>
+             <div className="bg-white p-6 rounded-xl border-t-4 border-orange-500 shadow-sm transform scale-105 z-10 relative">
+                <div className="absolute top-0 right-0 bg-orange-500 text-white text-xs font-bold px-3 py-1 rounded-bl-lg rounded-tr-xl">
+                  ANA ODAK
+                </div>
+                <div className="h-10 w-10 bg-orange-100 text-orange-600 rounded-lg flex items-center justify-center mb-4">
+                  <Phone size={20} />
+                </div>
+                <h3 className="font-bold text-lg mb-2">2. Trafik & Lead</h3>
+                <p className="text-slate-600 text-sm mb-4">Doğrudan satış ve WhatsApp iletişimine yönlendiren kampanyalar.</p>
+                <ul className="text-sm text-slate-500 space-y-1 border-t pt-3 border-slate-100">
+                  <li><strong>Bütçe Dağılımı:</strong> %60</li>
+                  <li><strong>İçerik:</strong> Fırsat Araçları, Finans</li>
+                  <li><strong>Ana KPI:</strong> CPL / WhatsApp Tıklaması</li>
+                </ul>
+             </div>
+             <div className="bg-white p-6 rounded-xl border-t-4 border-green-500 shadow-sm">
+                <div className="h-10 w-10 bg-green-100 text-green-600 rounded-lg flex items-center justify-center mb-4">
+                  <ShieldCheck size={20} />
+                </div>
+                <h3 className="font-bold text-lg mb-2">3. Remarketing</h3>
+                <p className="text-slate-600 text-sm mb-4">Daha önce etkileşime girenleri ikna etme ve güven aşılama.</p>
+                <ul className="text-sm text-slate-500 space-y-1 border-t pt-3 border-slate-100">
+                  <li><strong>Bütçe Dağılımı:</strong> %20</li>
+                  <li><strong>İçerik:</strong> Müşteri Teslimat Videoları</li>
+                  <li><strong>Ana KPI:</strong> Satışa Dönüşüm Oranı</li>
+                </ul>
+             </div>
+          </div>
+        )}
+
+        {/* --- TAB: AKSİYON --- */}
+        {activeTab === 'aksiyon' && (
+          <div className="bg-white p-6 md:p-8 rounded-xl shadow-sm border border-slate-200 animate-fade-in max-w-3xl">
+            <h3 className="text-xl font-bold text-slate-800 mb-6 flex items-center">
+              İlk 7 Günde Yapılacaklar Listesi
+            </h3>
+            <div className="space-y-3">
+              {checklist.map(item => (
+                <div 
+                  key={item.id} 
+                  className={`flex items-start p-3 rounded-lg border transition-colors cursor-pointer ${
+                    item.done ? 'bg-green-50 border-green-200' : 'bg-slate-50 border-slate-200 hover:bg-slate-100'
+                  }`}
+                  onClick={() => toggleChecklist(item.id)}
+                >
+                  <div className={`mt-0.5 w-6 h-6 flex-shrink-0 rounded border flex items-center justify-center mr-3 transition-colors ${
+                    item.done ? 'bg-green-500 border-green-500' : 'bg-white border-slate-300'
+                  }`}>
+                    {item.done && <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>}
+                  </div>
+                  <span className={`text-slate-700 select-none ${item.done ? 'line-through opacity-60' : ''}`}>
+                    {item.text}
+                  </span>
+                </div>
+              ))}
             </div>
-        </section>
-    </main>
-
-    <footer class="py-10 border-t border-gray-100 bg-white">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col md:flex-row justify-between items-center gap-6">
-            <div class="flex items-center space-x-2 shrink-0">
-                <div class="w-8 h-8 rounded-full gradient-bg flex items-center justify-center text-white font-bold text-sm">m</div>
-                <p class="text-xs font-bold text-gray-900">muimedya <span class="text-gray-400 font-normal">| Full Creative Proposal</span></p>
+            
+            <div className="mt-8 pt-6 border-t border-slate-100">
+               <a 
+                 href="https://wa.me/905322426012?text=Merhaba,%20strateji%20raporunu%20inceledim%20ve%20onayl%C4%B1yorum.%20Ba%C5%9Flayabiliriz!" 
+                 target="_blank"
+                 rel="noopener noreferrer"
+                 className="w-full bg-slate-900 hover:bg-slate-800 text-white font-medium py-3 px-4 rounded-lg transition-colors flex items-center justify-center cursor-pointer"
+               >
+                 Stratejiyi Onayla ve Başla
+               </a>
             </div>
-            <p class="text-[8px] sm:text-[10px] text-gray-400 font-bold uppercase tracking-[0.4em] text-center">
-                Ankara | 2024 Strategic Proposal for Yuppie
-            </p>
-        </div>
-    </footer>
+          </div>
+        )}
 
-    <script>
-        // --- State Management ---
-        let currentPackage = 2;
+      </main>
+      <style dangerouslySetInnerHTML={{__html: `
+        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
 
-        // --- Charts Implementation ---
-        document.addEventListener('DOMContentLoaded', () => {
-            initSwotChart();
-        });
-
-        function initSwotChart() {
-            const ctx = document.getElementById('swotChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'radar',
-                data: {
-                    labels: ['Teknik Uzmanlık', 'Pazar Farkındalığı', 'Ekip Gücü', 'Dijital Potansiyel', 'Özgünlük'],
-                    datasets: [{
-                        label: 'Yuppie Marka Gücü',
-                        data: [98, 75, 85, 60, 95],
-                        backgroundColor: 'rgba(124, 58, 237, 0.15)',
-                        borderColor: '#7C3AED',
-                        pointBackgroundColor: '#7C3AED',
-                        borderWidth: 2,
-                        pointRadius: 3
-                    }, {
-                        label: 'Sektör Ortalaması',
-                        data: [40, 60, 50, 65, 30],
-                        backgroundColor: 'rgba(219, 39, 119, 0.05)',
-                        borderColor: 'rgba(219, 39, 119, 0.3)',
-                        pointBackgroundColor: 'rgba(219, 39, 119, 0.3)',
-                        borderWidth: 1,
-                        borderDash: [5, 5]
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        r: {
-                            angleLines: { color: 'rgba(124, 58, 237, 0.1)' },
-                            grid: { color: 'rgba(124, 58, 237, 0.1)' },
-                            pointLabels: { 
-                                font: { family: 'Plus Jakarta Sans', size: 9, weight: '700' },
-                                color: '#6B7280'
-                            },
-                            ticks: { display: false }
-                        }
-                    },
-                    plugins: {
-                        legend: { 
-                            position: 'bottom',
-                            labels: { 
-                                font: { family: 'Plus Jakarta Sans', size: 10, weight: '600' }, 
-                                padding: 15,
-                                usePointStyle: true
-                            }
-                        }
-                    }
-                }
-            });
+        .animate-fade-in {
+          animation: fadeIn 0.4s ease-out forwards;
         }
-
-        // --- Interactive Package Selection ---
-        function selectPackage(id) {
-            for (let i = 1; i <= 3; i++) {
-                const pkg = document.getElementById(`pkg-${i}`);
-                if (i === id) {
-                    pkg.classList.add('active-pkg', 'shadow-xl');
-                    pkg.classList.remove('bg-white');
-                } else {
-                    pkg.classList.remove('active-pkg', 'shadow-xl');
-                    pkg.classList.add('bg-white');
-                }
-            }
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
         }
-    </script>
-</body>
-</html>
+      `}} />
+    </div>
+  );
+}
